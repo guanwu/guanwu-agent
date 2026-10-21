@@ -1,0 +1,31 @@
+<!--
+  Copyright (C) 2026 Jiaowei <wei.jiao@guanwu.com>
+  SPDX-License-Identifier: AGPL-3.0-only
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <OutputType Condition="'$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOSPlatform('Windows'))">WinExe</OutputType>
+    <OutputType Condition="'$(RuntimeIdentifier)' != '' and $(RuntimeIdentifier.StartsWith('win'))">WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>guanwu-agent</AssemblyName>
+    <RootNamespace>GuanwuAgent</RootNamespace>
+    <Version>1.0.0</Version>
+    <Copyright>Copyright (C) 2026 Jiaowei &lt;wei.jiao@guanwu.com&gt;</Copyright>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <PublishAot>true</PublishAot>
+    <SelfContained>true</SelfContained>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <StackTraceSupport>false</StackTraceSupport>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnableAotAnalyzer>true</EnableAotAnalyzer>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+</Project>
