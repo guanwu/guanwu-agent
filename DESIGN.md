@@ -83,6 +83,11 @@ callback per output stream:
 The SDK reads while it sends. On a terminal message it stops the upload. It
 serialises requests on the connection.
 
+`connect()` dials the agent first. When the default endpoint is unreachable in
+a browser, it opens `ga://` in a hidden frame and retries the socket. A custom
+`url` is not woken, and `wake: false` disables the launch. Browsers only permit
+the launch from a user gesture.
+
 ## 7. Layout
 
 ```
@@ -98,6 +103,7 @@ src/GuanwuAgentSdk/         SDK
   protocol.ts               Message types, stream names
   connection.ts             State, pairing, abort, close
   client.ts                 AgentClient: one connection, exec/files/http
+  wake.ts                   ga:// launch through a hidden frame
   files.ts http.ts exec.ts errors.ts index.ts
 tests/smoke.mjs             The only automated test
 docs/index.html             Manual test page

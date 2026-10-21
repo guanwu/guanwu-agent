@@ -697,7 +697,25 @@ var GuanwuAgent = (() => {
     }
   };
 
+  // src/GuanwuAgentSdk/wake.ts
+  var WakeUrl = "ga://wake";
+  var FrameLifetimeMs = 2e3;
+  function wake() {
+    if (typeof document === "undefined") {
+      return false;
+    }
+    const frame = document.createElement("iframe");
+    frame.hidden = true;
+    frame.src = WakeUrl;
+    (document.body ?? document.documentElement).append(frame);
+    window.setTimeout(() => frame.remove(), FrameLifetimeMs);
+    return true;
+  }
+
   // src/GuanwuAgentSdk/client.ts
+  var WakeAttemptTimeoutMs = 1e3;
+  var WakeRetryDelayMs = 250;
+  var WakeAttempts = 40;
   var AgentClient = class _AgentClient {
     constructor(connection) {
       this.connection = connection;
@@ -707,7 +725,7 @@ var GuanwuAgent = (() => {
       this.http = new HttpApi(invoke);
     }
     static async connect(options = {}) {
-      const connection = await Connection.connect(options.url, options.timeoutMs);
+      const connection = await connectWithWake(options);
       return new _AgentClient(connection);
     }
     close() {
@@ -716,6 +734,36 @@ var GuanwuAgent = (() => {
   };
   function connect(options = {}) {
     return AgentClient.connect(options);
+  }
+  async function connectWithWake(options) {
+    const url = options.url ?? ENDPOINT;
+    const timeoutMs = options.timeoutMs ?? DefaultConnectTimeoutMs;
+    const wakes = url === ENDPOINT && options.wake !== false;
+    const attemptTimeoutMs = wakes ? Math.min(timeoutMs, WakeAttemptTimeoutMs) : timeoutMs;
+    try {
+      return await Connection.connect(url, attemptTimeoutMs);
+    } catch (error) {
+      if (!wakes || !(error instanceof ConnectionClosedError)) {
+        throw error;
+      }
+    }
+    wake();
+    let lastError = null;
+    for (let attempt = 0; attempt < WakeAttempts; attempt++) {
+      try {
+        return await Connection.connect(url, attemptTimeoutMs);
+      } catch (error) {
+        if (!(error instanceof ConnectionClosedError)) {
+          throw error;
+        }
+        lastError = error;
+      }
+      await delay2(WakeRetryDelayMs);
+    }
+    throw lastError ?? new ConnectionClosedError("timed out while connecting to the agent");
+  }
+  function delay2(milliseconds) {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
   }
   return __toCommonJS(index_exports);
 })();

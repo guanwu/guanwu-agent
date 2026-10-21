@@ -1391,6 +1391,7 @@
       const MAX_ENTRY_ROWS = 2000;
       const MAX_LOG_ROWS = 400;
       const PROGRESS_REFRESH_MS = 50;
+      const CONNECT_TIMEOUT_MS = 4000;
 
       // UI state; streams is keyed by the wire stream name (stdout, content,
       // entries, body) so chunks and entries land in the right panel.
@@ -1570,7 +1571,7 @@
           ui.empty.lastChild.textContent = "\n            Choose an operation, then send it.";
         } else {
           strong.textContent = "No request sent yet.";
-          ui.empty.lastChild.textContent = "\n            Start the agent, connect, then send a request.";
+          ui.empty.lastChild.textContent = "\n            Connect; the browser wakes the agent, then send a request.";
         }
       }
 
@@ -2245,10 +2246,11 @@
 
         state.connecting = true;
         updateConnectionUi();
+        setActivity(["connecting to the agent"]);
         log("connect", `connecting to ${sdk.ENDPOINT}`);
 
         try {
-          state.agent = await sdk.connect({ timeoutMs: 4000 });
+          state.agent = await sdk.connect({ timeoutMs: CONNECT_TIMEOUT_MS });
           log("connect", `connected, protocol ${sdk.SUBPROTOCOL}`);
           state.connecting = false;
           updateConnectionUi();
@@ -2260,7 +2262,7 @@
           updateConnectionUi();
           setWire("error");
           ui.activity.classList.add("is-error");
-          setActivity(["Could not connect. Start the agent and try again."], true);
+          setActivity(["Could not connect. Allow the browser to open ga://, then try again."], true);
           log("error", describeError(error), true);
           ui.empty.hidden = false;
           ui.empty.querySelector("strong").textContent = "The agent is not reachable.";

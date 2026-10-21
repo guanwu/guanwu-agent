@@ -32,7 +32,7 @@ export type Invoke = <T>(
 
 const MaxSendBytes = 64 * 1024;
 const MaxBufferedBytes = 1024 * 1024;
-const DefaultConnectTimeoutMs = 5000;
+export const DefaultConnectTimeoutMs = 5000;
 
 // Per-operation stream state. Entries arrive as newline-delimited JSON, so
 // a streaming decoder carries partial UTF-8 sequences and partial lines

@@ -4,6 +4,7 @@ import { HttpApi } from "./http";
 export interface ConnectOptions {
     url?: string;
     timeoutMs?: number;
+    wake?: boolean;
 }
 export declare class AgentClient {
     private readonly connection;

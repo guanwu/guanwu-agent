@@ -11,6 +11,7 @@ export interface StreamHandlers {
 }
 export type InputSource = Uint8Array | ArrayBuffer | Blob | ReadableStream<Uint8Array>;
 export type Invoke = <T>(op: string, params: object, handlers: StreamHandlers, input?: InputSource) => Promise<T>;
+export declare const DefaultConnectTimeoutMs = 5000;
 export declare class Connection {
     private readonly ws;
     private current;

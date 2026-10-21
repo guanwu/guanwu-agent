@@ -43,6 +43,12 @@ release/win-x64/guanwu-agent.exe
 </script>
 ```
 
+`connect()` dials the agent and, when the default endpoint is unreachable,
+opens `ga://` in a hidden frame and retries for several seconds. The browser
+asks for permission the first time; choose Always allow. `timeoutMs` bounds
+each socket attempt (5000 ms by default). Pass `{ wake: false }` to skip the
+launch. A custom `url` is connected without waking.
+
 ## Documentation
 
 - [`PROTOCOL.md`](PROTOCOL.md) — wire protocol, operations, errors, limits
